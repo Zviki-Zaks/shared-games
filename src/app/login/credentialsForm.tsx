@@ -1,8 +1,35 @@
 "use client";
+
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { signIn as signInService } from "@/app/api/signin/signin-service";
-import { signIn } from "next-auth/react";
+import { SignInResponse, signIn } from "next-auth/react";
+
+const postNewUser = async ({
+  name,
+  email,
+  password,
+}: {
+  name: string;
+  email: string;
+  password: string;
+}) => {
+  try {
+    const signInResponse = await fetch("http://localhost:3000/api/signin", {
+      method: "POST",
+      body: JSON.stringify({ name, email, password }),
+      cache: "no-store",
+    });
+    // console.log("signInResponse", signInResponse);
+    if (signInResponse.ok) {
+      const user = await signInResponse.json();
+      return user;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 export default function CredentialsForm() {
   const router = useRouter();
@@ -22,29 +49,27 @@ export default function CredentialsForm() {
       if (!name) {
         return setError("אנא מלא את כל השדות");
       }
-      const user = await signInService({
+      const res = await postNewUser({
         name,
         email,
         password,
       });
-      if (user) {
-        router.push(`/auth`);
-      } else {
-        setError("ההרשמה נכשלה");
-      }
-    } else {
-      const signInResponse = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (signInResponse && !signInResponse.error) {
-        router.push(`/auth`);
-      } else {
-        setError("אימייל או סיסמה לא מתאימים");
+      if (!res) {
+        return setError("ההרשמה נכשלה");
       }
     }
+    const signInResponse = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    if (signInResponse && !signInResponse.error) {
+      router.push(`/auth`);
+    } else {
+      setError("אימייל או סיסמה לא מתאימים");
+    }
+    // }
   };
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-1" dir="rtl">

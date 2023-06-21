@@ -3,7 +3,6 @@ import NextAuth from "next-auth/next";
 import { prisma } from "@/lib/db";
 import bcrypt from "bcrypt";
 import { AuthOptions } from "next-auth";
-import { signJwtAccessToken } from "../../../../lib/jwt";
 
 export const authOptions: AuthOptions = {
   providers: [
