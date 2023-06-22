@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { SignInResponse, signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const postNewUser = async ({
   name,
@@ -19,7 +20,6 @@ const postNewUser = async ({
       body: JSON.stringify({ name, email, password }),
       cache: "no-store",
     });
-    // console.log("signInResponse", signInResponse);
     if (signInResponse.ok) {
       const user = await signInResponse.json();
       return user;
@@ -35,18 +35,22 @@ export default function CredentialsForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isNewUser, setIsNewUser] = useState(false);
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const [isPending, setIsPending] = useState(false);
 
-    const data = new FormData(e.currentTarget);
+  const onSubmit = async (ev: FormEvent<HTMLFormElement>) => {
+    ev.preventDefault();
+    setIsPending((isPending) => !isPending);
+    const data = new FormData(ev.currentTarget);
     const email = data.get("email")?.toString();
     const password = data.get("password")?.toString();
     if (!email || !password) {
+      setIsPending((isPending) => !isPending);
       return setError("אנא מלא את כל השדות");
     }
     if (isNewUser) {
       const name = data.get("name")?.toString();
       if (!name) {
+        setIsPending((isPending) => !isPending);
         return setError("אנא מלא את כל השדות");
       }
       const res = await postNewUser({
@@ -55,6 +59,7 @@ export default function CredentialsForm() {
         password,
       });
       if (!res) {
+        setIsPending((isPending) => !isPending);
         return setError("ההרשמה נכשלה");
       }
     }
@@ -67,12 +72,17 @@ export default function CredentialsForm() {
     if (signInResponse && !signInResponse.error) {
       router.push(`/auth`);
     } else {
+      setIsPending((isPending) => !isPending);
       setError("אימייל או סיסמה לא מתאימים");
     }
-    // }
   };
+
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-1" dir="rtl">
+    <form
+      onSubmit={(ev) => onSubmit(ev)}
+      className="flex flex-col gap-1"
+      dir="rtl"
+    >
       {!!isNewUser && (
         <>
           <label htmlFor="name" className="block font-bold">
@@ -110,9 +120,15 @@ export default function CredentialsForm() {
       {!!error && <span className="py-2 px-4 rounded bg-red-500">{error}</span>}
       <button
         type="submit"
-        className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded mt-4"
+        className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded mt-4 flex justify-center"
       >
-        {"התחבר"}
+        {!!isPending ? (
+          <LoadingSpinner size={"h-5 w-5"} color="text-white" />
+        ) : isNewUser ? (
+          "הרשם"
+        ) : (
+          "התחבר"
+        )}
       </button>
       <button
         className="text-sm text-gray-500 underline"
@@ -122,7 +138,7 @@ export default function CredentialsForm() {
         }}
       >
         {isNewUser ? "יש לך חשבון? היכנס" : "אין לך חשבון? הרשם"}
-      </button>{" "}
+      </button>
     </form>
   );
 }
