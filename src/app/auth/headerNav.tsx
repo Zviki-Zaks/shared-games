@@ -27,21 +27,21 @@ export default function HeaderNav() {
         <nav>
           <ul className="flex flex-col text-center">
             <Link
-              className="hover:shadow-md hover:bg-zinc-100 px-4 py-1"
+              className="hover:shadow-md hover:bg-zinc-100 px-6 py-1 text-gray-500"
               onClick={handleClose}
               href={`/`}
             >
               {"בית"}
             </Link>
             <Link
-              className="hover:shadow-md hover:bg-zinc-100 px-4 py-1"
+              className="hover:shadow-md hover:bg-zinc-100 px-6 py-1 text-gray-500"
               onClick={handleClose}
-              href={`/auth/addgame`}
+              href={`/auth/add-game`}
             >
               {"צור משחק"}
             </Link>
             <button
-              className="hover:shadow-md hover:bg-zinc-100 px-4 py-1"
+              className="hover:shadow-md hover:bg-zinc-100 px-6 py-1 text-gray-500"
               onClick={() => {
                 signOut();
                 redirect("/");

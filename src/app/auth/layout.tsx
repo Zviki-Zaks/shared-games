@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import { Session } from "next-auth";
+import Image from "next/image";
 
 export default async function AdminLayout({
   children,
@@ -18,11 +19,13 @@ export default async function AdminLayout({
     <div className="flex flex-col min-h-screen">
       <header className="w-full flex justify-center bg-slate-600 shadow-lg ">
         <div className="container flex justify-between px-6 py-3">
-          <div>Logo</div>
+          <Image src="/favicon.ico" width={24} height={24} alt="logo" />
           <HeaderNav />
         </div>
       </header>
-      <main className="w-full flex-grow flex justify-center">{children}</main>
+      <main className="w-full flex-grow flex justify-center p-6">
+        {children}
+      </main>
     </div>
   );
 }
