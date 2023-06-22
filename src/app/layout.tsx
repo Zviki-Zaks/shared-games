@@ -1,7 +1,7 @@
 import "./globals.scss";
-import { Inter } from "next/font/google";
+import { Secular_One } from "next/font/google";
 
-const inter = Inter({ subsets: ["latin"] });
+const secular = Secular_One({ weight: "400", subsets: ["hebrew"] });
 
 export const metadata = {
   title: "משחקים יחד",
@@ -15,7 +15,7 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="he">
-      <body className={inter.className} suppressHydrationWarning={true}>
+      <body className={secular.className} suppressHydrationWarning={true}>
         {children}
       </body>
     </html>
