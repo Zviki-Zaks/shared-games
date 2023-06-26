@@ -20,11 +20,27 @@ model User {
 }
 
 model Game {
-  id       String   @id @default(auto()) @map("_id") @db.ObjectId
-  title    String
-  authorId String   @db.ObjectId
-  author   User     @relation("authorGames", fields: [authorId], references: [id])
-  playerId String[] @db.ObjectId
-  player   User     @relation("playerGames", fields: [authorId], references: [id])
-  gameType String
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  authorId    String     @db.ObjectId
+  author      User       @relation("authorGames", fields: [authorId], references: [id])
+  playerId    String[]   @db.ObjectId
+  player      User       @relation("playerGames", fields: [authorId], references: [id])
+  gameType    GameType
+  published   Boolean
+  questionIds String[]   @db.ObjectId
+  questions   Question[] @relation(fields: [questionIds], references: [id])
+}
+
+enum GameType {
+  BINGO
+}
+
+model Question {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  question         String
+  corectAnswer     String
+  incorrectAnswers String[]
+  gameIds          String[] @db.ObjectId
+  games            Game[]   @relation(fields: [gameIds], references: [id])
 }
